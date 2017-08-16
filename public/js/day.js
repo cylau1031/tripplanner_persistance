@@ -25,7 +25,7 @@ var dayModule = (function () {
 
   // ~~~~~~~~~~~~~~~~~~~~~~~
     // If you follow the logic of `attractionsModule.getEnhanced` (try following it!), you will note that it depends on `loadEnhanceAttractions` to have run.
-    //Note that `loadEnhancedAttractions` is already being called for you in `/public/js/options.js` and that it utilizes another method given to us by the `attractionModule` (singular). 
+    //Note that `loadEnhancedAttractions` is already being called for you in `/public/js/options.js` and that it utilizes another method given to us by the `attractionModule` (singular).
   // ~~~~~~~~~~~~~~~~~~~~~~~
   function Day (data) {
     // for brand-new days
@@ -113,6 +113,17 @@ var dayModule = (function () {
       default: console.error('bad type:', attraction);
     }
     // activating UI
+    $.ajax({
+          method: 'PUT',
+          url: `/api/days/${this.number}`,
+          data: {
+            attraction: attraction
+          }
+        })
+          .then(function() {
+            console.log('WHY')
+          })
+
     attraction.show();
   };
 
