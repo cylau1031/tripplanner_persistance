@@ -11,7 +11,32 @@ var Day = db.define('day', {
 }, {
   defaultScope: {
     include: [Hotel, Restaurant, Activity]
-	}
+  },
+  hooks: {
+    afterDestroy: function(dayInstance) {
+      console.log('HELLO')
+      return Day.findAll({
+        where: {
+          number: {
+            $gt: dayInstance.number
+          }
+        }
+      })
+        .then(function(allDays) {
+          allDays.forEach(function(day) {
+            console.log('before', day)
+            day.update({
+              number: this.number - 1
+            })
+            .then((updatedDay) => {
+              console.log('after', updatedDay)
+            })
+          })
+        })
+        .catch(console.error)
+        }
+      }
 })
+
 
 module.exports = Day

@@ -4,9 +4,25 @@ var Restaurant = require('../../models').Restaurant;
 var Activity = require('../../models').Activity;
 var Day = require('../../models').Day;
 
+daysRouter.param('id', function(req, res, next, id) {
+  Day.findOne({
+    where: {
+      number: id
+    }
+  })
+  .then(function(day) {
+    req.currentDay = day
+  })
+  .then(next)
+})
+
+
+
 //gets all days
 daysRouter.get('/all', function(req, res, next) {
-  Day.findAll()
+  Day.findAll({
+    order: [['number', 'ASC']]
+  })
     .then(function(days){
       res.send(days)
     })
@@ -81,7 +97,7 @@ daysRouter.put('/:id', function(req, res, next){
     }
   })
   .then(function(day) {
-    if (req.body.attractionType === "hotel") {
+    if (req.body.attractionType === 'hotel') {
       // add hotelId to Day
       Hotel.findOne({
         where: {
@@ -94,7 +110,7 @@ daysRouter.put('/:id', function(req, res, next){
       .catch(next)
     }
 
-    else if (req.body.attractionType === "restaurant") {
+    else if (req.body.attractionType === 'restaurant') {
       // add restaurant to day_restaurant table
       Restaurant.findOne({
         where: {
@@ -107,7 +123,7 @@ daysRouter.put('/:id', function(req, res, next){
       .catch(next)
     }
 
-    else if (req.body.attractionType === "activity") {
+    else if (req.body.attractionType === 'activity') {
       // add restaurant to day_restaurant table
       Activity.findOne({
         where: {
@@ -164,7 +180,28 @@ daysRouter.delete('/:id/:options', function(req, res, next){
 
 // delete one specific day
 daysRouter.delete('/:id', function(req, res, next){
-  console.log("got into delete function")
+  //console.log('HELLO')
+  // Day.findAll({
+  //   where: {
+  //     number: {
+  //       $gt: req.params.id
+  //     }
+  //   }
+  // })
+  //   .then(function(allDays) {
+  //     allDays.forEach(function(day) {
+  //       console.log('before', day)
+  //       return day.update({
+  //         number: day.number - 1
+  //       })
+  //       .then((updatedDay) => {
+  //         console.log('after', updatedDay)
+  //       })
+  //       .catch(next)
+  //     })
+  //   })
+  //   .catch(console.error)
+
   Day.destroy({
     where: {
       number: req.params.id

@@ -117,6 +117,7 @@ var tripModule = (function () {
         url: '/api/days/all'
       })
       .then(function(db_days) {
+        console.log(db_days)
         if (db_days.length) {
           db_days.forEach(function(db_day) {
             var newDay = dayModule.create(db_day);
