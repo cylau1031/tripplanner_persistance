@@ -76,6 +76,17 @@ var tripModule = (function () {
     // Do not delete a day until it has already been deleted from the DB
   // ~~~~~~~~~~~~~~~~~~~~~~~
   function deleteCurrentDay () {
+    $.ajax({
+      method: 'DELETE',
+      url: `/api/days/${currentDay.number}`,
+    })
+    .then(function(){
+      console.log('deleted')
+    })
+    .catch(console.log)
+
+    // when we delete this day, we also have to update the number field in the database_day instances for everything after this day !!!
+
     // prevent deleting last day
     if (days.length < 2 || !currentDay) return;
     // remove from the collection
@@ -99,7 +110,24 @@ var tripModule = (function () {
       // ~~~~~~~~~~~~~~~~~~~~~~~
         //If we are trying to load existing Days, then let's make a request to the server for the day. Remember this is async. For each day we get back what do we need to do to it?
       // ~~~~~~~~~~~~~~~~~~~~~~~
-      $(addDay);
+
+      // grab days from database
+      $.ajax({
+        method: 'GET',
+        url: '/api/days/all'
+      })
+      .then(function(db_days) {
+        if (db_days.length) {
+          db_days.forEach(function(db_day) {
+            var newDay = dayModule.create(db_day);
+            // add to days array
+            days.push(newDay);
+          })
+          currentDay = days[0];
+          currentDay.show();
+        }
+        else $(addDay);
+      })
     },
 
     switchTo: switchTo,

@@ -113,16 +113,20 @@ var dayModule = (function () {
       default: console.error('bad type:', attraction);
     }
     // activating UI
+    //console.dir('number', this.number, 'attraction', attraction)
+    //console.log($.ajax)
     $.ajax({
-          method: 'PUT',
-          url: `/api/days/${this.number}`,
-          data: {
-            attraction: attraction
-          }
-        })
-          .then(function() {
-            console.log('WHY')
-          })
+        method: 'PUT',
+        url: `/api/days/${this.number}`,
+        data: {
+          attractionId: attraction.id,
+          attractionType: attraction.type
+        }
+      })
+      .then(function() {
+        console.log('day updated')
+      })
+      .catch(console.log)
 
     attraction.show();
   };
@@ -134,6 +138,20 @@ var dayModule = (function () {
   // ~~~~~~~~~~~~~~~~~~~~~~~
   Day.prototype.removeAttraction = function (attraction) {
     // removing from the day object
+    console.log("in remove attraction")
+    $.ajax({
+        method: 'DELETE',
+        url: `/api/days/${this.number}/${attraction.type}`,
+        data: {
+          attractionId: attraction.id,
+          attractionType: attraction.type,
+        }
+      })
+      .then(function() {
+        console.log('attraction removed')
+      })
+      .catch(console.log)
+
     switch (attraction.type) {
       case 'hotel':
         this.hotel = null;
