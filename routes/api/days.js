@@ -10,6 +10,7 @@ daysRouter.get('/all', function(req, res, next) {
     .then(function(days){
       res.send(days)
     })
+    .catch(next)
 })
 
 //get specific day
@@ -22,6 +23,7 @@ daysRouter.get('/:id', function(req, res, next){
     .then(function(day) {
       res.send(day)
     })
+    .catch(next)
 
 })
 
@@ -33,6 +35,7 @@ daysRouter.post('/', function(req, res, next){
       console.log("created the day")
       res.send(day)
     })
+    .catch(next)
 })
 
 //get attractions on given day
@@ -63,7 +66,8 @@ daysRouter.get('/:id/:options', function(req, res, next){
     else {
       throw new Error("wrong type of item")
     }
-  });
+  })
+  .catch(next);
   //next()
 })
 
@@ -85,9 +89,9 @@ daysRouter.put('/:id', function(req, res, next){
         }
       })
       .then(function(hotel) {
-        day.setHotel(hotel)
+        return day.setHotel(hotel)
       })
-      .catch(console.log)
+      .catch(next)
     }
 
     else if (req.body.attractionType === "restaurant") {
@@ -98,8 +102,9 @@ daysRouter.put('/:id', function(req, res, next){
         }
       })
       .then(function(restaurant) {
-        day.setRestaurants(restaurant);
+        return day.addRestaurant(restaurant);
       })
+      .catch(next)
     }
 
     else if (req.body.attractionType === "activity") {
@@ -110,8 +115,9 @@ daysRouter.put('/:id', function(req, res, next){
         }
       })
       .then(function(activity) {
-        day.setActivities(activity);
+        return day.addActivity(activity);
       })
+      .catch(next)
     }
 
     else {
@@ -119,6 +125,10 @@ daysRouter.put('/:id', function(req, res, next){
     }
 
   })
+  .then(function() {
+    res.sendStatus(200);
+  })
+  .catch(next)
 })
 
 //deletes attractions from specific day
@@ -131,25 +141,25 @@ daysRouter.delete('/:id/:options', function(req, res, next){
   .then(function(day) {
     if (req.params.options === "hotel") {
       // remove hotel from day
-      day.setHotel(null);
+      return day.setHotel(null);
     }
 
     else if (req.params.options === "restaurant") {
       // add restaurant to day_restaurant table
-      day.removeRestaurant(parseInt(req.body.attractionId));
+      return day.removeRestaurant(parseInt(req.body.attractionId));
     }
 
     else if (req.params.options === "activity") {
       // add restaurant to day_restaurant table
-      day.removeActivity(parseInt(req.body.attractionId));
+      return day.removeActivity(parseInt(req.body.attractionId));
     }
 
     else {
       throw new Error("wrong event type")
     }
-
-    res.end();
-  })
+  }).then(function(day) {
+    res.sendStatus(204);
+  }).catch(next)
 })
 
 // delete one specific day
@@ -161,8 +171,9 @@ daysRouter.delete('/:id', function(req, res, next){
     }
   })
   .then(function() {
-    res.end()
+    res.sendStatus(204)
   })
+  .catch(next)
 })
 
 module.exports = daysRouter
